@@ -18,12 +18,20 @@ type alias Room =
 
 
 type alias Model =
-    { location : Int, rooms : List Room }
+    { playerLocation : Int, rooms : List Room }
 
 
 model : Model
 model =
-    { location = 1, rooms = [ { location = 1, connections = [ 2, 3 ] }, { location = 2, connections = [ 1 ] }, { location = 3, connections = [ 1 ] } ] }
+    { playerLocation = 1
+    , rooms =
+        [ { location = 1, connections = [ 2, 5 ] }
+        , { location = 2, connections = [ 1, 3 ] }
+        , { location = 3, connections = [ 2, 4 ] }
+        , { location = 4, connections = [ 3, 5 ] }
+        , { location = 5, connections = [ 1, 4 ] }
+        ]
+    }
 
 
 
@@ -38,7 +46,7 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Move room ->
-            { model | location = room }
+            { model | playerLocation = room }
 
 
 
@@ -60,7 +68,7 @@ find predicate list =
 
 getConnections : Model -> List Int
 getConnections model =
-    case find (\room -> room.location == model.location) model.rooms of
+    case find (\room -> room.location == model.playerLocation) model.rooms of
         Just room ->
             room.connections
 
@@ -71,6 +79,6 @@ getConnections model =
 view : Model -> Html Msg
 view model =
     div []
-        [ div [] [ text ("You are in Room " ++ (toString model.location)) ]
+        [ div [] [ text ("You are in Room " ++ (toString model.playerLocation)) ]
         , div [] (List.map (\num -> button [ onClick (Move num) ] [ text ("Go to Room " ++ (toString num)) ]) (getConnections model))
         ]
