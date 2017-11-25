@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
+import Html.Attributes exposing (style)
 import ListExtras
 
 
@@ -18,8 +19,17 @@ type alias Room =
     { location : Int, connections : List Int }
 
 
+type Author
+    = Player
+    | Game
+
+
+type alias Message =
+    { author : Author, text : String }
+
+
 type alias Model =
-    { playerLocation : Int, rooms : List Room }
+    { playerLocation : Int, rooms : List Room, messageLog : List Message }
 
 
 model : Model
@@ -47,6 +57,11 @@ model =
         , { location = 19, connections = [ 13, 18, 20 ] }
         , { location = 20, connections = [ 15, 16, 19 ] }
         ]
+    , messageLog =
+        [ { author = Game, text = "Welcome to Hunt the Wumpus!" }
+        , { author = Game, text = "You are in Room 1" }
+        , { author = Game, text = "Tunnels lead to: 2 5 6" }
+        ]
     }
 
 
@@ -62,16 +77,29 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Move room ->
-            { model | playerLocation = room }
+            { model
+                | playerLocation = room
+                , messageLog =
+                    (List.append model.messageLog
+                        [ { author = Player, text = "Walk to Room " ++ (toString room) }
+                        , { author = Game, text = "You are in Room " ++ (toString room) }
+                        , { author = Game
+                          , text =
+                                "Tunnels lead to:"
+                                    ++ (List.foldl
+                                            (\number string -> string ++ " " ++ (toString number))
+                                            ""
+                                            (getConnections room model.rooms)
+                                       )
+                          }
+                        ]
+                    )
+            }
 
 
-
--- VIEW
-
-
-getConnections : Model -> List Int
-getConnections model =
-    case ListExtras.find (\room -> room.location == model.playerLocation) model.rooms of
+getConnections : Int -> List Room -> List Int
+getConnections roomLocation rooms =
+    case ListExtras.find (\room -> room.location == roomLocation) rooms of
         Just room ->
             room.connections
 
@@ -79,19 +107,35 @@ getConnections model =
             []
 
 
+
+-- VIEW
+
+
 view : Model -> Html Msg
 view model =
     let
         roomConnections =
-            getConnections model
+            getConnections model.playerLocation model.rooms
     in
         div []
-            [ div [] [ text ("You are in Room " ++ (toString model.playerLocation)) ]
+            [ div []
+                (List.map
+                    (\message ->
+                        div
+                            [ if message.author == Game then
+                                (style [ ( "backgroundColor", "red" ) ])
+                              else
+                                (style [ ( "backgroundColor", "blue" ) ])
+                            ]
+                            [ text message.text ]
+                    )
+                    model.messageLog
+                )
             , div []
                 (List.map
                     (\roomLocation ->
                         button [ onClick (Move roomLocation) ]
-                            [ text ("Go to Room " ++ (toString roomLocation)) ]
+                            [ text ("Walk to Room " ++ (toString roomLocation)) ]
                     )
                     roomConnections
                 )
