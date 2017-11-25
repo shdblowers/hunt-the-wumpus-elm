@@ -19,13 +19,12 @@ type alias Room =
 
 
 type alias Model =
-    { playerLocation : Int, pitLocations : List Int, rooms : List Room }
+    { playerLocation : Int, rooms : List Room }
 
 
 model : Model
 model =
     { playerLocation = 1
-    , pitLocations = [ 5, 15 ]
     , rooms =
         [ { location = 1, connections = [ 2, 5, 6 ] }
         , { location = 2, connections = [ 1, 3, 8 ] }
@@ -85,16 +84,9 @@ view model =
     let
         roomConnections =
             getConnections model
-
-        inAPit =
-            List.member model.playerLocation model.pitLocations
     in
         div []
             [ div [] [ text ("You are in Room " ++ (toString model.playerLocation)) ]
-            , if inAPit then
-                div [] [ text "You are in a pit" ]
-              else
-                div [] [ text "You aren't in a pit" ]
             , div []
                 (List.map
                     (\roomLocation ->
