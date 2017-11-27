@@ -115,9 +115,25 @@ displayMessage : Message -> Html Msg
 displayMessage message =
     div
         [ if message.author == Game then
-            (style [ ( "backgroundColor", "red" ) ])
+            (style
+                [ ( "backgroundColor", "red" )
+                , ( "borderRadius", "10px" )
+                , ( "width", "50%" )
+                , ( "marginRight", "auto" )
+                , ( "textAlign", "center" )
+                , ( "color", "white" )
+                ]
+            )
           else
-            (style [ ( "backgroundColor", "blue" ) ])
+            (style
+                [ ( "backgroundColor", "blue" )
+                , ( "borderRadius", "10px" )
+                , ( "width", "50%" )
+                , ( "marginLeft", "auto" )
+                , ( "textAlign", "center" )
+                , ( "color", "white" )
+                ]
+            )
         ]
         [ text message.text ]
 
@@ -128,10 +144,10 @@ view model =
         roomConnections =
             getConnections model.playerLocation model.rooms
     in
-        div []
-            [ div []
+        div [ style [ ( "display", "flex" ), ( "flexDirection", "column" ), ( "height", "100vh" ) ] ]
+            [ div [ style [ ( "flex", "1 1 auto" ), ( "overflowY", "auto" ) ] ]
                 (List.map displayMessage model.messageLog)
-            , div []
+            , div [ style [ ( "width", "50%" ), ( "marginLeft", "auto" ), ( "textAlign", "center" ) ] ]
                 (List.map
                     (\roomLocation ->
                         button [ onClick (Move roomLocation) ]
