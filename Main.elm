@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (class, classList)
 import ListExtras
 
 
@@ -114,26 +114,11 @@ getConnections roomLocation rooms =
 displayMessage : Message -> Html Msg
 displayMessage message =
     div
-        [ if message.author == Game then
-            (style
-                [ ( "backgroundColor", "red" )
-                , ( "borderRadius", "10px" )
-                , ( "width", "50%" )
-                , ( "marginRight", "auto" )
-                , ( "textAlign", "center" )
-                , ( "color", "white" )
-                ]
-            )
-          else
-            (style
-                [ ( "backgroundColor", "blue" )
-                , ( "borderRadius", "10px" )
-                , ( "width", "50%" )
-                , ( "marginLeft", "auto" )
-                , ( "textAlign", "center" )
-                , ( "color", "white" )
-                ]
-            )
+        [ classList
+            [ ( "chatbot-message", True )
+            , ( "chatbot-game-message", message.author == Game )
+            , ( "chatbot-player-message", message.author == Player )
+            ]
         ]
         [ text message.text ]
 
@@ -144,15 +129,18 @@ view model =
         roomConnections =
             getConnections model.playerLocation model.rooms
     in
-        div [ style [ ( "display", "flex" ), ( "flexDirection", "column" ), ( "height", "100vh" ) ] ]
-            [ div [ style [ ( "flex", "1 1 auto" ), ( "overflowY", "auto" ) ] ]
-                (List.map displayMessage model.messageLog)
-            , div [ style [ ( "width", "50%" ), ( "marginLeft", "auto" ), ( "textAlign", "center" ) ] ]
-                (List.map
-                    (\roomLocation ->
-                        button [ onClick (Move roomLocation) ]
-                            [ text ("Walk to Room " ++ (toString roomLocation)) ]
+        div []
+            [ Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
+            , div [ class "chatbot-container" ]
+                [ div [ class "chatbot-messages-container" ]
+                    (List.map displayMessage model.messageLog)
+                , div [ class "chatbot-buttons-container" ]
+                    (List.map
+                        (\roomLocation ->
+                            button [ onClick (Move roomLocation) ]
+                                [ text ("Walk to Room " ++ (toString roomLocation)) ]
+                        )
+                        roomConnections
                     )
-                    roomConnections
-                )
+                ]
             ]

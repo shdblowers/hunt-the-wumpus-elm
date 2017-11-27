@@ -1,0 +1,33 @@
+div.chatbot-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+div.chatbot-messages-container {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+div.chatbot-buttons-container {
+  width: 50%;
+  margin-left: auto;
+  text-align: center;
+}
+
+div.chatbot-message {
+  border-radius: 10px;
+  width: 50%;
+  text-align: center;
+  color: white;
+}
+
+div.chatbot-game-message {
+  background-color: #00aedb;
+  margin-right: auto;
+}
+
+div.chatbot-player-message {
+  background-color: #8ec127;
+  margin-left: auto;
+}
