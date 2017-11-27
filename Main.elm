@@ -111,6 +111,17 @@ getConnections roomLocation rooms =
 -- VIEW
 
 
+displayMessage : Message -> Html Msg
+displayMessage message =
+    div
+        [ if message.author == Game then
+            (style [ ( "backgroundColor", "red" ) ])
+          else
+            (style [ ( "backgroundColor", "blue" ) ])
+        ]
+        [ text message.text ]
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -119,18 +130,7 @@ view model =
     in
         div []
             [ div []
-                (List.map
-                    (\message ->
-                        div
-                            [ if message.author == Game then
-                                (style [ ( "backgroundColor", "red" ) ])
-                              else
-                                (style [ ( "backgroundColor", "blue" ) ])
-                            ]
-                            [ text message.text ]
-                    )
-                    model.messageLog
-                )
+                (List.map displayMessage model.messageLog)
             , div []
                 (List.map
                     (\roomLocation ->
